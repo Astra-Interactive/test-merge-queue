@@ -26,7 +26,7 @@ jobs:
     uses: ./.github/workflows/call-validate-gradle-wrapper.yml
   check_changelog_changed:
     name: "Validate CHANGELOG changed"
-    if: ${{ github.event_name }} =='merge_group'
+    if: github.event_name =='merge_group'
     uses: ./.github/workflows/call-check-changelog.yml
   info:
     name: "Display concurrency info"
