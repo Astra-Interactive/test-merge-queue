@@ -3,7 +3,7 @@ name: Pull Request CI
 on:
   pull_request:
     branches:
-      - 'dev'
+      - 'main'
   merge_group:
 
 # Concurrency strategy:
@@ -21,16 +21,28 @@ concurrency:
 
 
 jobs:
+  changed_files:
+    runs-on: ubuntu-latest
+    name: Test changed-files
+    steps:
+      - uses: actions/checkout@v4
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v44
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
+
   validate_gradle_wrapper:
     name: "Validate gradle wrapper"
     uses: ./.github/workflows/call-validate-gradle-wrapper.yml
   check_changelog_changed:
     name: "Validate CHANGELOG changed"
     uses: ./.github/workflows/call-check-changelog.yml
-  update_gradle_cache:
-    name: "Gradle cache update"
-    needs: [ validate_gradle_wrapper ]
-    uses: ./.github/workflows/call-gradle-cache.yml
   info:
     name: "Display concurrency info"
     runs-on: ubuntu-latest
